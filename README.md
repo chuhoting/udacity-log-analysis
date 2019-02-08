@@ -5,9 +5,6 @@
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. The Logs Analysis Project is part of the Udacity Full Stack Web Developer Nanodegree's project 1.
 
 ### Prerequisites
-
-What things you need to install the software and how to install them
-
 ```
 Python 3.5.2
 psycopg2 2.7.3.2
