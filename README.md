@@ -21,13 +21,13 @@ This project consists of the following files:
 ``newsdata.zip`` - A zip file containing a file that populates the news PostgreSQL database.<br>
 ``README.md`` - This read me file.
 
-## Getting Started
+### Getting Started
 
 Download the project zip file to your computer and unzip the file.
 
 Open the text-based interface for your operating system (e.g. the terminal window in Linux, the command prompt in Windows) and navigate to the project directory.
 
-## Bringing the VM up
+### Bringing the VM up
 
 ```
 vagrant up
@@ -47,14 +47,14 @@ We will then run the following command to log up the database.
 unzip newsdata.zip
 psql -d news -f newsdata.sql
 ```
-## Running the queries
+### Running the queries
 
 The ``loganalysisfinal.py`` contains everything needed to execute the 3 queries required in the project. To run it, simply execute the following command in the terminal.
 ```
 python3 loganalysisfinal.py
 ```
 The answers to the 3 queries will be printed onto the terminal.
-## Shutting down
+### Shutting down
 
 When you are finished with the VM, press ``Ctrl-D`` to log out of it and shut it down with this command:
 
