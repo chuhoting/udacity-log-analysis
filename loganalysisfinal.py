@@ -16,14 +16,14 @@ query1 = ("""
         LIMIT 3;
         """)
 request2 = "2. Who are the most popular article authors of all time?"
-query2=("""select authors.name,
+query2 = ("""select authors.name,
         count (*) as num from authors,
         articles, log where concat('/article/', articles.slug) =
         log.path AND articles.author = authors.id group
         by authors.name order by num desc;
         """)
-request3= "3. On which days did more than 1% of requests lead to errors?"
-query3= ("""
+request3 = "3. On which days did more than 1% of requests lead to errors?"
+query3 = ("""
         SELECT total.day,
         ROUND(((errors.error_requests*1.0) / total.requests), 3) AS percent
         FROM (
@@ -41,7 +41,7 @@ query3= ("""
         WHERE (ROUND(((errors.error_requests*1.0) / total.requests), 3) > 0.01)
         ORDER BY percent DESC;
         """)
-query4=("""WITH daily_requests as(
+query4 = ("""WITH daily_requests as(
             SELECT count(log.status) as num, cast(log.time as date) as date
             from log
             group by date
@@ -51,20 +51,22 @@ query4=("""WITH daily_requests as(
             where status like '404%'
             group by date
         ), error_rate as(
-            select daily_requests.date, 
-            (daily_errors.num::float / daily_requests.num::float) * 100 
+            select daily_requests.date,
+            (daily_errors.num::float / daily_requests.num::float) * 100
             as percent_error
             from daily_requests, daily_errors
             where daily_requests.date = daily_errors.date
         ) select * from error_rate where percent_error > 1;""")
 
+
 def getdata(sqlcode):
     db = psycopg2.connect(database=DBNAME)
     c = db.cursor()
     c.execute(sqlcode)
-    posts= c.fetchall()
+    posts = c.fetchall()
     db.close()
     return posts
+
 
 def print_results(q_list):
     for i in range(len(q_list)):
@@ -73,18 +75,19 @@ def print_results(q_list):
         print("%s - %d" % (title, res) + " views")
     print("\n")
 
+
 def print_results2(q_list):
     for result in answer4:
         print('    {time:%B %d, %Y} - {percent_error:.1f}% errors'.format(
-                time=result[0],
-                percent_error=result[1]))
+            time=result[0],
+            percent_error=result[1]))
     print("")
 
 
-answer1=getdata(query1)
-answer2=getdata(query2)
-answer3=getdata(query3)
-answer4=getdata(query4)
+answer1 = getdata(query1)
+answer2 = getdata(query2)
+answer3 = getdata(query3)
+answer4 = getdata(query4)
 print(request1)
 print_results(answer1)
 print(request2)
