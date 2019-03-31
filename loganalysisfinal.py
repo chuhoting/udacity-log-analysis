@@ -1,5 +1,6 @@
-# Database code for the DB Forum, full solution!
 #!/usr/bin/env python
+# Database code for the DB Forum, full solution!
+
 
 import psycopg2
 
