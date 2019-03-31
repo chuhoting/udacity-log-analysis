@@ -1,4 +1,5 @@
 # Database code for the DB Forum, full solution!
+#!/usr/bin/env python
 
 import psycopg2
 
@@ -17,7 +18,8 @@ query1 = ("""
 request2 = "2. Who are the most popular article authors of all time?"
 query2=("""select authors.name,
         count (*) as num from authors,
-        articles, log where concat('/article/', articles.slug) = log.path AND articles.author = authors.id group
+        articles, log where concat('/article/', articles.slug) =
+        log.path AND articles.author = authors.id group
         by authors.name order by num desc;
         """)
 request3= "3. On which days did more than 1% of requests lead to errors?"
@@ -39,22 +41,22 @@ query3= ("""
         WHERE (ROUND(((errors.error_requests*1.0) / total.requests), 3) > 0.01)
         ORDER BY percent DESC;
         """)
-query4=("""WITH numer as (
-        select cast(log.time as date) as day, count(log.status) as num
-        from log
-        where log.status
-        like '404%'
-        group by day
-        ), denom as(
-        select cast(log.time as date) as day, count(log.status) as num
-        from log
-        group by day
-        ), error as(
-        select numer.num::float /denom.num::float * 100 as errorpc
-        from numer,denom
-        where numer.day=denom.day
-        )
-        select cast(log.time as date),errorpc from error,log where errorpc >1 and log.status like '404%';""")
+query4=("""WITH daily_requests as(
+            SELECT count(log.status) as num, cast(log.time as date) as date
+            from log
+            group by date
+        ), daily_errors as(
+            select count(log.status) as num, cast(log.time as date) as date
+            from log
+            where status like '404%'
+            group by date
+        ), error_rate as(
+            select daily_requests.date, 
+            (daily_errors.num::float / daily_requests.num::float) * 100 
+            as percent_error
+            from daily_requests, daily_errors
+            where daily_requests.date = daily_errors.date
+        ) select * from error_rate where percent_error > 1;""")
 
 def getdata(sqlcode):
     db = psycopg2.connect(database=DBNAME)
@@ -71,6 +73,14 @@ def print_results(q_list):
         print("%s - %d" % (title, res) + " views")
     print("\n")
 
+def print_results2(q_list):
+    for result in answer4:
+        print('    {time:%B %d, %Y} - {percent_error:.1f}% errors'.format(
+                time=result[0],
+                percent_error=result[1]))
+    print("")
+
+
 answer1=getdata(query1)
 answer2=getdata(query2)
 answer3=getdata(query3)
@@ -80,5 +90,4 @@ print_results(answer1)
 print(request2)
 print_results(answer2)
 print(request3)
-print(answer4[0][0])
-print(+answer4[0][1])
+print_results2(answer4)
